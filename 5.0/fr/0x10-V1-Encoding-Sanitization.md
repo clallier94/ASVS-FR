@@ -1,16 +1,16 @@
-# V1 Encodage et désinfection
+# V1 Encodage et nettoyage
 
 ## Objectif du contrôle
 
 Ce chapitre se concentre sur les failles de sécurité les plus courantes des applications web, liées au traitement non sécurisé de données non fiables. Cela entraîne diverses vulnérabilités techniques où les données non fiables sont interprétées selon les règles syntaxiques de l'interpréteur concerné.
 
-Avec les applications web modernes, il est toujours préférable d'utiliser des API plus sûres, telles que les requêtes paramétrées, l'échappement automatique ou les frameworks de création de modèles. Dans le cas contraire, un codage, un échappement ou une purification de sortie soigneusement effectués seront essentiels à la sécurité de l'application.
+Avec les applications web modernes, il est toujours préférable d'utiliser des API plus sûres, telles que les requêtes paramétrées, l'échappement automatique ou les frameworks de création de modèles. Dans le cas contraire, un encodage, un échappement ou une purification de sortie soigneusement effectués seront essentiels à la sécurité de l'application.
 
 La validation des entrées peut servir de mécanisme de défense en profondeur contre les contenus inattendus et dangereux. Cependant, son objectif principal étant de garantir que le contenu entrant répond aux attentes fonctionnelles et métier, les exigences à ce sujet sont décrites dans le chapitre « Validation et logique métier ».
 
 ## V1.1 Architecture d'encodage et de nettoyage
 
-Les sections ci-dessous présentent les exigences spécifiques à la syntaxe ou à l'interpréteur pour le traitement sécurisé du contenu non sécurisé et éviter les failles de sécurité. Ces exigences précisent l'ordre et le lieu de ce traitement. Elles visent également à garantir que les données stockées le soient dans leur état d'origine et non dans un état codé ou échappé (par exemple, encodage HTML), afin d'éviter les problèmes de double codage.
+Les sections ci-dessous présentent les exigences spécifiques à la syntaxe ou à l'interpréteur pour le traitement sécurisé du contenu non sécurisé et éviter les failles de sécurité. Ces exigences précisent l'ordre et le lieu de ce traitement. Elles visent également à garantir que les données stockées le soient dans leur état d'origine et non dans un état encodé ou échappé (par exemple, encodage HTML), afin d'éviter les problèmes de double encodage.
 
 | # | Description | Niveau | #v5.0.be |
 | :---: | :--- | :---: | :---: |
@@ -26,10 +26,10 @@ Dans de nombreux cas, les bibliothèques de logiciels incluront des fonctions s�
 | # | Description | Niveau | #v5.0.be |
 | :---: | :--- | :---: | :---: |
 | **1.2.1** | Vérifiez que l'encodage de sortie d'une réponse HTTP, d'un document HTML ou d'un document XML est pertinent pour le contexte requis, comme l'encodage des caractères pertinents pour les éléments HTML, les attributs HTML, les commentaires HTML, les CSS ou les champs d'en-tête HTTP, pour éviter de modifier la structure du message ou du document. | 1 | v5.0.be-5.3.1 |
-| **1.2.2** | Lors de la création dynamique d'URL, vérifiez que les données non fiables sont codées en fonction de leur contexte (par exemple, codage d'URL ou codage base64url pour les paramètres de requête ou de chemin). Assurez-vous que seuls les protocoles d'URL sûrs sont autorisés (par exemple, interdire javascript: ou data:). | 1 | v5.0.be-5.3.13 |
+| **1.2.2** | Lors de la création dynamique d'URL, vérifiez que les données non fiables sont encodées en fonction de leur contexte (par exemple, encodage d'URL ou encodage base64url pour les paramètres de requête ou de chemin). Assurez-vous que seuls les protocoles d'URL sûrs sont autorisés (par exemple, interdire javascript: ou data:). | 1 | v5.0.be-5.3.13 |
 | **1.2.3** | Vérifiez que l'encodage ou l'échappement de sortie est utilisé lors de la création dynamique de contenu JavaScript (y compris JSON), pour éviter de modifier la structure du message ou du document (pour éviter l'injection JavaScript et JSON). | 1 | v5.0.be-5.3.3 |
 | **1.2.4** | Vérifiez que la sélection de données ou les requêtes de base de données (par exemple, SQL, HQL, NoSQL, Cypher) utilisent des requêtes paramétrées, des ORM, des frameworks d'entités ou sont protégées contre les injections SQL et autres attaques par injection de base de données. Ceci est également pertinent lors de l'écriture de procédures stockées. | 1 | v5.0.be-5.3.4 |
-| **1.2.5** | Vérifiez que l’application protège contre l’injection de commandes du système d’exploitation et que les appels du système d’exploitation utilisent des requêtes du système d’exploitation paramétrées ou utilisent un codage de sortie de ligne de commande contextuelle. | 1 | v5.0.be-5.3.8 |
+| **1.2.5** | Vérifiez que l’application protège contre l’injection de commandes du système d’exploitation et que les appels du système d’exploitation utilisent des requêtes du système d’exploitation paramétrées ou utilisent un encodage de sortie de ligne de commande contextuelle. | 1 | v5.0.be-5.3.8 |
 | **1.2.6** | Vérifiez que l’application protège contre les vulnérabilités d’injection LDAP ou que des contrôles de sécurité spécifiques pour empêcher l’injection LDAP ont été mis en œuvre. | 2 | v5.0.be-5.3.7 |
 | **1.2.7** | Vérifiez que l’application est protégée contre les attaques par injection XPath en utilisant la paramétrisation des requêtes ou des requêtes précompilées. | 2 | v5.0.be-5.3.10 |
 | **1.2.8** | Vérifiez que les processeurs LaTeX sont configurés de manière sécurisée (par exemple, en n'utilisant pas l'indicateur « --shell-escape ») et qu'une liste blanche de commandes est utilisée pour empêcher les attaques par injection LaTeX. | 2 | v5.0.be-5.3.12 |
@@ -38,11 +38,11 @@ Dans de nombreux cas, les bibliothèques de logiciels incluront des fonctions s�
 
 Remarque : L'utilisation de requêtes paramétrées ou l'échappement SQL ne sont pas toujours suffisants. Les parties de requête telles que les noms de table et de colonne (y compris les noms de colonne « ORDER BY ») ne peuvent pas être échappées. L'inclusion de données utilisateur échappées dans ces champs entraîne l'échec des requêtes ou une injection SQL.
 
-## V1.3 Désinfection
+## V1.3 Nettoyage
 
-La protection idéale contre l'utilisation de contenu non fiable dans un contexte dangereux consiste à utiliser un codage ou un échappement spécifique au contexte qui conserve la même signification sémantique du contenu dangereux mais le rend sûr pour une utilisation dans ce contexte particulier, comme cela a été discuté plus en détail dans la section précédente.
+La protection idéale contre l'utilisation de contenu non fiable dans un contexte dangereux consiste à utiliser un encodage ou un échappement spécifique au contexte qui conserve la même signification sémantique du contenu dangereux, mais le rend sûr pour une utilisation dans ce contexte particulier, comme cela a été discuté plus en détail dans la section précédente.
 
-Si cela n'est pas possible, une désinfection sera nécessaire pour supprimer les caractères ou contenus potentiellement dangereux. Dans certains cas, cela pourrait modifier la signification sémantique de la saisie, mais pour des raisons de sécurité, cette solution pourrait être impérative.
+Si cela n'est pas possible, un nettoyage sera nécessaire pour supprimer les caractères ou contenus potentiellement dangereux. Dans certains cas, cela pourrait modifier la signification sémantique de la saisie, mais pour des raisons de sécurité, cette solution pourrait être impérative.
 
 | # | Description | Niveau | #v5.0.be |
 | :---: | :--- | :---: | :---: |
@@ -50,10 +50,10 @@ Si cela n'est pas possible, une désinfection sera nécessaire pour supprimer le
 | **1.3.2** | Vérifiez que l'application évite d'utiliser eval() ou d'autres fonctionnalités d'exécution de code dynamique telles que Spring Expression Language (SpEL). En l'absence d'alternative, toute saisie utilisateur incluse doit être nettoyée avant d'être exécutée. | 1 | v5.0.be-5.2.4 |
 | **1.3.3** | Vérifiez que les données transmises à un contexte potentiellement dangereux sont préalablement nettoyées pour appliquer des mesures de sécurité, telles que l'autorisation uniquement des caractères sûrs pour ce contexte et la suppression des entrées trop longues. | 2 | v5.0.be-5.2.2 |
 | **1.3.4** | Vérifiez que le contenu scriptable Scalable Vector Graphics (SVG) fourni par l'utilisateur est validé ou nettoyé pour contenir uniquement des balises et des attributs (tels que des graphiques de dessin) qui sont sûrs pour l'application, par exemple, ne contiennent pas de scripts et d'objets étrangers. | 2 | v5.0.be-5.2.7 |
-| **1.3.5** | Vérifiez que l'application désinfecte ou désactive le contenu du langage de modèle d'expression ou de script fourni par l'utilisateur, tel que les feuilles de style Markdown, CSS ou XSL, BBCode ou similaire. | 2 | v5.0.be-5.2.8 |
+| **1.3.5** | Vérifiez que l'application nettoie ou désactive le contenu du langage de modèle d'expression ou de script fourni par l'utilisateur, tel que les feuilles de style Markdown, CSS ou XSL, BBCode ou similaire. | 2 | v5.0.be-5.2.8 |
 | **1.3.6** | Vérifiez que l'application protège contre les attaques de falsification de requête côté serveur (SSRF), en validant les données non fiables par rapport à une liste blanche de protocoles, de domaines, de chemins et de ports et en nettoyant les caractères potentiellement dangereux avant d'utiliser les données pour appeler un autre service. | 2 | v5.0.be-5.2.6 |
 | **1.3.7** | Vérifiez que l'application se protège contre les attaques par injection de modèles en interdisant la création de modèles basés sur des entrées non fiables. En l'absence d'alternative, toute entrée non fiable incluse dynamiquement lors de la création du modèle doit être nettoyée ou rigoureusement validée. | 2 | v5.0.be-5.2.5 |
-| **1.3.8** | Vérifiez que l’application désinfecte correctement les entrées non fiables avant utilisation dans les requêtes Java Naming and Directory Interface (JNDI) et que JNDI est configuré de manière sécurisée pour empêcher les attaques par injection JNDI. | 2 | v5.0.be-5.2.11 |
+| **1.3.8** | Vérifiez que l’application nettoie correctement les entrées non fiables avant utilisation dans les requêtes Java Naming and Directory Interface (JNDI) et que JNDI est configuré de manière sécurisée pour empêcher les attaques par injection JNDI. | 2 | v5.0.be-5.2.11 |
 | **1.3.9** | Vérifiez que l’application nettoie le contenu avant qu’il ne soit envoyé à memcache pour éviter les attaques par injection. | 2 | v5.0.be-5.2.12 |
 | **1.3.10** | Vérifiez que les chaînes de format susceptibles d'être résolues de manière inattendue ou malveillante lors de leur utilisation sont nettoyées avant d'être traitées. | 2 | v5.0.be-5.2.13 |
 | **1.3.11** | Vérifiez que l'application nettoie les entrées utilisateur avant de les transmettre aux systèmes de messagerie pour se protéger contre l'injection SMTP ou IMAP. | 2 | v5.0.be-5.2.3 |
